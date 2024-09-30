@@ -67,21 +67,16 @@
 # r'' - буквальное интерпретирование строки
 
 
-
-import argparse
 import re
+import argparse
 
-
-parser = argparse.ArgumentParser() # создание экземпляра парсера
-parser.add_argument('data', type=str, help='Имя файла для обработки') # добавление позиционного аргумента командной строки
-args = parser.parse_args() # парсинг аргументов
-#print(f"Hello, {args.name}!") # использование полученного значения аргумента
-input_file = args.data
-#разобраться с парсингом
-
+parser = argparse.ArgumentParser(description='Парсинг CSV-файла.')
+parser.add_argument('filename', type=str, help='Имя CSV-файла для обработки')
+args = parser.parse_args()
+filename = args.filename
 
 try:
-    with open(input_file, 'r', encoding='utf-8') as file:
+    with open(filename, 'r', encoding='utf-8') as file:
         text = file.read()
     #print(text)
     pattern = r'Имя:\s*([^\n]+)'
@@ -108,7 +103,7 @@ try:
 
 
 except FileNotFoundError:
-    print(f"Файл '{input_file}' не найден.")
+    print(f"Файл '{filename}' не найден.")
 except Exception as e:
     print(f"Произошла ошибка: {e}")
 

@@ -1,10 +1,11 @@
-import csv
 import argparse
+import csv
 import os
+
 from icrawler.builtin import GoogleImageCrawler
 
 
-def parsing():
+def parsing() -> argparse.Namespace:
     """
     Парсинг аргументов командной строки
     """
@@ -15,7 +16,8 @@ def parsing():
     args = parser.parse_args()
     return args
 
-def download_images(keyword, save_dir, num_images=50):
+
+def download_images(keyword, save_dir, num_images=50) -> None:
     """
     Скачивание изображений в save_dir
     """
@@ -24,27 +26,34 @@ def download_images(keyword, save_dir, num_images=50):
     crawler = GoogleImageCrawler(storage={'root_dir': save_dir})
     crawler.crawl(keyword=keyword, max_num=num_images)
 
-def create_annotation_csv(save_dir, annotation_file):
+
+def create_annotation_csv(save_dir, annotation_file) -> None:
     """
     Создание аннотации к изображениям
     """
     with open(annotation_file, 'w', newline='') as csvfile:
         fieldnames = ['absolute_path', 'relative_path']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames) #Создание объекта DictWriter модуля csv для записи данных в формате словаря, где список строк fieldnames используется в качестве заголовков столбцов csv файла
-        writer.writeheader() #Запись строки заголовков в csv файл
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
 
-        for root, _, files in os.walk(save_dir): #Рекурсивный обход файлов в директории (отсутствие dirs - _)
+
+        for root, _, files in os.walk(save_dir):
             for file in files:
                 if file.endswith(('jpg', 'jpeg', 'png')):
-                    abs_path = os.path.join(root, file) #Соединение в абсолютный путь
-                    rel_path = os.path.relpath(abs_path, start=save_dir) #Поиск относительного пути. Функция os.path.relpath вычисляет относительный путь от abs_path до save_dir. Например, если abs_path = '/save_dir/subdir1/file1.jpg' и save_dir = '/save_dir', то rel_path будет subdir1/file1.jpg.
-                    writer.writerow({'absolute_path': abs_path, 'relative_path': rel_path}) #Запись путей по колонкам csv файла
+                    abs_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(abs_path, start=save_dir)
+                    writer.writerow({'absolute_path': abs_path, 'relative_path': rel_path})
+
 
 class ImageIterator:
     """
     Класс Итератора для картинок
     """
     def __init__(self, annotation_file=None, folder_path=None):
+        '''
+        Конструктор, инициализирующий массив строчек в зависимости от передаваемых аргументов
+        (файла аннотации или папки картинок)
+        '''
         self.images = []
         if annotation_file:
             with open(annotation_file, 'r') as csvfile:
@@ -56,12 +65,22 @@ class ImageIterator:
                 for file in files:
                     if file.endswith(('jpg', 'jpeg', 'png')):
                         self.images.append(os.path.join(root, file))
+        if not folder_path or not annotation_file:
+            print("Необходимо указать либо файл аннотации, либо папку картинок")
         self.index = 0
 
+
     def __iter__(self):
+        '''
+        Метод возвращения самого объекта итератора
+        '''
         return self
 
+
     def __next__(self):
+        '''
+        Метод прохода по всем элементам массива класса через индекс и вывода их на экран
+        '''
         if self.index < len(self.images):
             image_path = self.images[self.index]
             self.index += 1
@@ -69,10 +88,11 @@ class ImageIterator:
         else:
             raise StopIteration
 
+
 def main():
     args = parsing()
     try:
-        download_images(args.keyword, args.save_dir)
+        #download_images(args.keyword, args.save_dir)
         print("\n\nКартинки загружены успешно")
         create_annotation_csv(args.save_dir, args.annotation_file)
         print("Папка аннотаций успешно создана")
@@ -90,6 +110,7 @@ def main():
 
     except Exception as e:
         print(f"Произошла ошибка: {e}")
+
 
 if __name__ == "__main__":
     main()

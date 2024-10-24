@@ -35,13 +35,15 @@ def create_annotation_csv(save_dir, annotation_file) -> None:
         fieldnames = ['absolute_path', 'relative_path']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
-
-
-        for root, _, files in os.walk(save_dir):
+        path = os.getcwd()
+        result_path = os.path.join(path, save_dir)
+        for root, _, files in os.walk(result_path):
             for file in files:
                 if file.endswith(('jpg', 'jpeg', 'png')):
                     abs_path = os.path.join(root, file)
+                    print(f"{abs_path} - ", end = '')
                     rel_path = os.path.relpath(abs_path, start=save_dir)
+                    print(f"{rel_path}")
                     writer.writerow({'absolute_path': abs_path, 'relative_path': rel_path})
 
 
@@ -53,6 +55,8 @@ class ImageIterator:
         '''
         Конструктор, инициализирующий массив строчек в зависимости от передаваемых аргументов
         (файла аннотации или папки картинок)
+        :param annotation_file: файл аннотации
+        :param folder_path: Папка картинок
         '''
         self.images = []
         if annotation_file:
@@ -65,8 +69,8 @@ class ImageIterator:
                 for file in files:
                     if file.endswith(('jpg', 'jpeg', 'png')):
                         self.images.append(os.path.join(root, file))
-        if not folder_path or not annotation_file:
-            print("Необходимо указать либо файл аннотации, либо папку картинок")
+        if not folder_path and not annotation_file:
+            raise Exception("Необходимо указать либо файл аннотации, либо папку картинок")
         self.index = 0
 
 
@@ -92,7 +96,7 @@ class ImageIterator:
 def main():
     args = parsing()
     try:
-        #download_images(args.keyword, args.save_dir)
+        download_images(args.keyword, args.save_dir)
         print("\n\nКартинки загружены успешно")
         create_annotation_csv(args.save_dir, args.annotation_file)
         print("Папка аннотаций успешно создана")

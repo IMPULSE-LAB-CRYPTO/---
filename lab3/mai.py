@@ -8,14 +8,14 @@ def parsing() -> argparse.Namespace:
     Парсинг аргументов командной строки
     """
     parser = argparse.ArgumentParser(description="Работа с изображением")
-    parser.add_argument('download_image', type = str, help='path to the input image')
-    parser.add_argument('result_image', type = str, help='path to the output image')
+    parser.add_argument('path_to_download_image', type = str, help='path to the input image')
+    parser.add_argument('path_to_result_image', type = str, help='path to the output image')
     args = parser.parse_args()
     return args
 
-def read_image(input_image, greyscale):
+def write_image(input_image, greyscale):
     """
-    Чтение изображения из файла
+    Запись нового изображения в файл
     :param input_image: входное изображение
     :param greyscale: аргумент для обработки серых изображений
     :return:  Mat | ndarray[Any, dtype] | ndarray
@@ -51,20 +51,22 @@ def task_binary_image(image):
     return binary_image
 
 
-
-
 def main():
     args = parsing()
     try:
-        image = read_image(args.input_image, cv2.IMREAD_GRAYSCALE)
-        print(image)
+        image = write_image(args.path_to_download_image, cv2.IMREAD_GRAYSCALE)
+        cv2.imshow('Arcane', image)
+        cv2.waitKey(0)
 
         # Вывод размера изображения
-        shape = image.shape()
+        shape = image.shape
         print(f"Размер изображения: {shape}")
 
         # Построение и отображение гистограммы
         gistogramm(image)
+
+
+
 
 
     except Exception as e:

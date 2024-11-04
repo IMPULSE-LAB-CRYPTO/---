@@ -1,6 +1,24 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt  # импорт
+import matplotlib.pyplot as plt
+import argparse
+
+def parsing() -> argparse.Namespace:
+    """
+    Парсинг аргументов командной строки
+    """
+    parser = argparse.ArgumentParser(description="Работа с изображением")
+    parser.add_argument('download_image', type = str, help='path to the input image')
+    parser.add_argument('result_image', type = str, help='path to the output image')
+    args = parser.parse_args()
+    return args
+
+
+
+
+
+
+
 
 img = cv2.imread('image.jpg')  # загрузка изображения
 

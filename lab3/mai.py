@@ -2,8 +2,9 @@ import argparse
 
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 
-from Work_with_images import write_image,gistogramm,task_binary_image
+from work_with_images import gistogramm, task_binary_image, write_image
 
 
 def parsing() -> argparse.Namespace:
@@ -18,7 +19,7 @@ def parsing() -> argparse.Namespace:
     return args
 
 
-def show_all(orig_image, grey_image, binary_image) -> None:
+def show_all(orig_image: np.ndarray, grey_image: np.ndarray, binary_image: np.ndarray) -> None:
     """
     Функция демонстрации всех трех изображений в одном окне
     :param orig_image: Оригинальное изображение
@@ -50,11 +51,13 @@ def main():
     args = parsing()
     try:
         orig_image = cv2.imread(args.path_to_original_image)
+        print(orig_image.shape)
         print(f"Оригинальное изображение сохранено в lab3/orig_image")
         cv2.imshow('Standart_kitty', orig_image)
         cv2.waitKey(0)
 
         grey_image = write_image(args.path_to_original_image, cv2.IMREAD_GRAYSCALE)
+        print(grey_image.shape)
         cv2.imwrite(args.path_to_grey_image, grey_image)
         print(f"Черно-белое изображение сохранено в lab3/grey_image")
         cv2.imshow('Upset_kitty', grey_image)
@@ -78,6 +81,7 @@ def main():
 
     except Exception as e:
         print(f"Произошла ошибка: {e}")
+
 
 if __name__ == "__main__":
     main()

@@ -1,13 +1,14 @@
-import numpy as np
 import cv2
+import numpy as np
 import matplotlib.pyplot as plt
 
-def write_image(input_image, greyscale) -> np.ndarray:
+
+def write_image(input_image: str, greyscale: int) -> np.ndarray:
     """
     Запись нового изображения в файл
     :param input_image: входное изображение
     :param greyscale: аргумент для обработки серых изображений
-    :return:  Mat | ndarray[Any, dtype] | ndarray
+    :return: ndarray
     """
     image = cv2.imread(input_image, greyscale)
     if image is None:
@@ -15,7 +16,7 @@ def write_image(input_image, greyscale) -> np.ndarray:
     return image
 
 
-def gistogramm(image) -> None:
+def gistogramm(image: np.ndarray) -> None:
     """
     Функция для построения и отображения гистограммы изображения
     :param image: Изображение для построение гистограммы
@@ -24,7 +25,7 @@ def gistogramm(image) -> None:
     plt.figure()
     plt.title("Grayscale Histogram")
     plt.xlabel("Bins")
-    plt.ylabel("# of Pixels")
+    plt.ylabel("№ of Pixels")
     # Аргументы: 1-само изображение 2-канал(серый,зеленый,синий) 3-mask(срез),
     # 4-количество интервалов, 5-диапозон на графике
     hist = cv2.calcHist([image], [0], None, [256], [0, 256])
@@ -33,7 +34,7 @@ def gistogramm(image) -> None:
     plt.show()
 
 
-def task_binary_image(image) -> np.ndarray:
+def task_binary_image(image: np.ndarray) -> np.ndarray:
     """
     Преобразование в бинарное изображение
     :param image:

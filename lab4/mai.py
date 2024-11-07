@@ -22,6 +22,7 @@ def main():
         df = pd.read_csv("data.csv")  # загрузка данных из csv файла
         print(df.head())  # отображение первых строк таблицы
 
+        print()
 
     except Exception as e:
         print(f"Произошла ошибка: {e}")

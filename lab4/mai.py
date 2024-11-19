@@ -1,8 +1,9 @@
 import argparse
-import csv
 
-import pandas as pd  # импорт
-
+import pandas as pd
+import os
+import cv2
+import matplotlib.pyplot as plt
 
 def parsing() -> argparse.Namespace:
     """
@@ -30,3 +31,54 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+# Предположим, что у вас есть список файлов изображений и их абсолютные пути
+file_paths = ["path/to/image1.jpg", "path/to/image2.jpg", "path/to/image3.jpg"]
+absolute_paths = [os.path.abspath(file_path) for file_path in file_paths]
+
+# Создаем DataFrame с двумя колонками: абсолютный и относительный пути
+df = pd.DataFrame({
+    'absolute_path': absolute_paths,
+    'relative_path': file_paths
+})
+
+# Добавляем колонки для высоты, ширины и глубины изображения
+heights = []
+widths = []
+depths = []
+
+for file_path in file_paths:
+    image = cv2.imread(file_path)
+    height, width, depth = image.shape
+    heights.append(height)
+    widths.append(width)
+    depths.append(depth)
+
+df['height'] = heights
+df['width'] = widths
+df['depth'] = depths
+
+# Вычисляем статистическую информацию для столбцов размеров изображения
+stats = df[['height', 'width', 'depth']].describe()
+print(stats)
+
+# Функция для фильтрации DataFrame по максимальной ширине и высоте изображения
+def filter_images(max_width, max_height):
+    return df[(df['height'] <= max_height) & (df['width'] <= max_width)]
+
+# Добавляем новый столбец с площадью изображения
+df['area'] = df['height'] * df['width']
+
+# Сортируем данные по площади изображений
+df = df.sort_values(by='area')
+
+# Создаем гистограмму распределения площадей изображений
+plt.hist(df['area'], bins=10, edgecolor='black')
+plt.title('Распределение площадей изображений')
+plt.xlabel('Площадь изображения')
+plt.ylabel('Количество изображений')
+plt.show()

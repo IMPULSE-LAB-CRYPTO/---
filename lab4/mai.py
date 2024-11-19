@@ -5,7 +5,15 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 
-
+def parsing() -> argparse.Namespace:
+    """
+    Парсинг аргументов командной строки
+    """
+    parser = argparse.ArgumentParser(description="Работа с изображением")
+    parser.add_argument('path_to_images_folder', type = str, help='path to folder with images')
+    parser.add_argument('path_to_csv_file', type=str, help='path to the csv file')
+    args = parser.parse_args()
+    return args
 
 def get_image_dimensions(path):
     '''
@@ -41,19 +49,39 @@ def add_columns(df):
     df['height'] = heights
     df['width'] = widths
     df['depth'] = depths
-
     return None
 
-def parsing() -> argparse.Namespace:
-    """
-    Парсинг аргументов командной строки
-    """
-    parser = argparse.ArgumentParser(description="Работа с изображением")
-    parser.add_argument('path_to_images_folder', type = str, help='path to folder with images')
-    parser.add_argument('path_to_csv_file', type=str, help='path to the csv file')
-    args = parser.parse_args()
-    return args
+def filter_images(df, max_width, max_height):
+    '''
+    Функция фильтрации изображений
+    :param df:
+    :param max_width:
+    :param max_height:
+    :return:
+    '''
+    return df[(df['height'] <= max_height) & (df['width'] <= max_width)]
 
+
+def add_column_area(df):
+    '''
+    Функция добавления столбца area
+    :param df:
+    :return: None
+    '''
+    df['area'] = df['height'] * df['width']
+    return  None
+
+def gistogramm(df):
+    '''
+    Функция создания гистограммы распределения площадей изображений
+    :param df:
+    :return:
+    '''
+    plt.hist(df['area'], bins=10, edgecolor='black')
+    plt.title('Распределение площадей изображений')
+    plt.xlabel('Площадь изображения')
+    plt.ylabel('Количество изображений')
+    plt.show()
 
 def main():
     args = parsing()
@@ -68,9 +96,15 @@ def main():
         # Вычисляем статистическую информацию для столбцов размеров изображения
         stats = df[['height', 'width', 'depth']].describe()
         print(stats)
+        print()
 
+        add_column_area(df)
+        print(df)
 
+        # Сортируем данные по площади изображений
+        df = df.sort_values(by='area')
 
+        gistogramm(df)
         print()
 
     except Exception as e:

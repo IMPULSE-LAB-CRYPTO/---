@@ -4,6 +4,8 @@ import pandas as pd
 import cv2
 import matplotlib.pyplot as plt
 
+from images_module import get_image_dimensions, add_column_area, add_columns, filter_images
+
 def parsing() -> argparse.Namespace:
     """
     Парсинг аргументов командной строки
@@ -14,59 +16,6 @@ def parsing() -> argparse.Namespace:
     args = parser.parse_args()
     return args
 
-def get_image_dimensions(path:str) -> tuple[int, int, int]:
-    '''
-    Функция для получения размеров изображения
-    :param path: path_to_image
-    :return: height, width, depth
-    '''
-    image = cv2.imread(path)
-    if image is not None:
-        height, width, depth = image.shape
-        return height, width, depth
-    else:
-        return None, None, None
-
-def add_columns(df:pd.DataFrame) -> None:
-    '''
-    Добавление столбцов с размерами изображения
-    :param df: pandas DataFrame (object)
-    :return: None
-    '''
-    heights = []
-    widths = []
-    depths = []
-
-    for path in df['absolute_path']:
-        height, width, depth = get_image_dimensions(path)
-        heights.append(height)
-        widths.append(width)
-        depths.append(depth)
-
-    df['height'] = heights
-    df['width'] = widths
-    df['depth'] = depths
-    return None
-
-def filter_images(df:pd.DataFrame, max_width:int, max_height:int) -> pd.DataFrame:
-    '''
-    Функция фильтрации изображений
-    :param df:
-    :param max_width: width filter
-    :param max_height: height filter
-    :return: pandas DataFrame (object)
-    '''
-    return df[(df['height'] <= max_height) & (df['width'] <= max_width)]
-
-
-def add_column_area(df:pd.DataFrame) -> None:
-    '''
-    Функция добавления столбца area
-    :param df: pandas DataFrame (object)
-    :return: None
-    '''
-    df['area'] = df['height'] * df['width']
-    return  None
 
 def gistogramm(df:pd.DataFrame) -> None:
     '''

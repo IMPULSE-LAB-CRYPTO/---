@@ -1,7 +1,6 @@
 import argparse
 
 import pandas as pd
-import os
 import cv2
 import matplotlib.pyplot as plt
 
@@ -15,10 +14,10 @@ def parsing() -> argparse.Namespace:
     args = parser.parse_args()
     return args
 
-def get_image_dimensions(path):
+def get_image_dimensions(path:str) -> tuple[int, int, int]:
     '''
     Функция для получения размеров изображения
-    :param path:
+    :param path: path_to_image
     :return: height, width, depth
     '''
     image = cv2.imread(path)
@@ -28,84 +27,90 @@ def get_image_dimensions(path):
     else:
         return None, None, None
 
-def add_columns(df):
+def add_columns(df:pd.DataFrame) -> None:
     '''
     Добавление столбцов с размерами изображения
+    :param df: pandas DataFrame (object)
     :return: None
     '''
-    # Создание пустых списков для размеров изображений
     heights = []
     widths = []
     depths = []
 
-    # Заполнение списков размерами изображений
     for path in df['absolute_path']:
         height, width, depth = get_image_dimensions(path)
         heights.append(height)
         widths.append(width)
         depths.append(depth)
 
-    # Добавление столбцов с размерами изображений в DataFrame
     df['height'] = heights
     df['width'] = widths
     df['depth'] = depths
     return None
 
-def filter_images(df, max_width, max_height):
+def filter_images(df:pd.DataFrame, max_width:int, max_height:int) -> pd.DataFrame:
     '''
     Функция фильтрации изображений
     :param df:
-    :param max_width:
-    :param max_height:
-    :return:
+    :param max_width: width filter
+    :param max_height: height filter
+    :return: pandas DataFrame (object)
     '''
     return df[(df['height'] <= max_height) & (df['width'] <= max_width)]
 
 
-def add_column_area(df):
+def add_column_area(df:pd.DataFrame) -> None:
     '''
     Функция добавления столбца area
-    :param df:
+    :param df: pandas DataFrame (object)
     :return: None
     '''
     df['area'] = df['height'] * df['width']
     return  None
 
-def gistogramm(df):
+def gistogramm(df:pd.DataFrame) -> None:
     '''
     Функция создания гистограммы распределения площадей изображений
-    :param df:
-    :return:
+    :param df: pandas DataFrame (object)
+    :return: None
     '''
     plt.hist(df['area'], bins=10, edgecolor='black')
     plt.title('Распределение площадей изображений')
     plt.xlabel('Площадь изображения')
     plt.ylabel('Количество изображений')
     plt.show()
+    return None
 
 def main():
     args = parsing()
     try:
         df = pd.read_csv(args.path_to_csv_file)  # загрузка данных из csv файла
         print(df.head())
-        print()
+        print(df.dtypes)
+        print("DataFrame создан на основе csv-файла\n")
 
         add_columns(df)
         print(df.head())
+        print("Колонки width, height, depth добавлены\n")
 
-        # Вычисляем статистическую информацию для столбцов размеров изображения
+        #
         stats = df[['height', 'width', 'depth']].describe()
         print(stats)
-        print()
+        print("Статистическая информация для столбцов размеров изображения вычислена\n")
+
+        filtered_df = filter_images(df, 500, 500)
+        print(filtered_df)
+        print("Отфильтрованный DataFrame Выведен\n")
 
         add_column_area(df)
-        print(df)
+        print(df.head())
+        print("Колонка area добавлена\n")
 
-        # Сортируем данные по площади изображений
         df = df.sort_values(by='area')
+        print("Сортировка данных по площади изображения\n")
 
         gistogramm(df)
-        print()
+        print("Гистограмма выведена")
 
     except Exception as e:
         print(f"Произошла ошибка: {e}")

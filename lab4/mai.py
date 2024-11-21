@@ -1,10 +1,10 @@
 import argparse
 
 import pandas as pd
-import cv2
 import matplotlib.pyplot as plt
 
-from images_module import get_image_dimensions, add_column_area, add_columns, filter_images
+from images_module import add_column_area, add_columns, filter_images
+
 
 def parsing() -> argparse.Namespace:
     """
@@ -17,23 +17,23 @@ def parsing() -> argparse.Namespace:
     return args
 
 
-def gistogramm(df:pd.DataFrame) -> None:
-    '''
+def create_histogram(df: pd.DataFrame) -> None:
+    """
     Функция создания гистограммы распределения площадей изображений
     :param df: pandas DataFrame (object)
     :return: None
-    '''
+    """
     plt.hist(df['area'], bins=10, edgecolor='black')
     plt.title('Распределение площадей изображений')
     plt.xlabel('Площадь изображения')
     plt.ylabel('Количество изображений')
     plt.show()
-    return None
+
 
 def main():
     args = parsing()
     try:
-        df = pd.read_csv(args.path_to_csv_file)  # загрузка данных из csv файла
+        df = pd.read_csv(args.path_to_csv_file)
         print(df.head())
         print(df.dtypes)
         print("DataFrame создан на основе csv-файла\n")
@@ -56,10 +56,10 @@ def main():
         print("Колонка area добавлена\n")
 
         df_sort = df.sort_values(by='area')
-        print((df_sort))
+        print(df_sort)
         print("Сортировка данных по площади изображения\n")
 
-        gistogramm(df)
+        create_histogram(df)
         print("Гистограмма выведена")
 
     except Exception as e:

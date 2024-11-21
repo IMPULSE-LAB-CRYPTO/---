@@ -55,7 +55,8 @@ def main():
         print(df.head())
         print("Колонка area добавлена\n")
 
-        df = df.sort_values(by='area')
+        df_sort = df.sort_values(by='area')
+        print((df_sort))
         print("Сортировка данных по площади изображения\n")
 
         gistogramm(df)

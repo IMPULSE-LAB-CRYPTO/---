@@ -9,7 +9,7 @@ class MainWindow(QMainWindow):
         super().__init__() #Вызов инициализатора род класса QMainWindow
         self.setWindowTitle("Просмотр датасета")
 
-        self.image_label = QLabel(self) #Создаем объект
+        self.image_label = QLabel(self) #Создаем объект QLabel(приложение граф интерфейса GUI)
         self.image_label.setFixedSize(800, 600)
 
         self.prev_button = QPushButton("Прошлое изображение", self)
@@ -44,22 +44,22 @@ class MainWindow(QMainWindow):
         if self.iterator:
             try:
                 next_image_path = next(self.iterator)
-                pixmap = QPixmap(next_image_path)
-                self.image_label.setPixmap(pixmap.scaled(self.image_label.size(), aspectRatioMode=1))
+                pixmap = QPixmap(next_image_path) #QPixmap содержит всю информацию о пикселях изображения (их цвет и позицию)
+                self.image_label.setPixmap(pixmap.scaled(self.image_label.size(), aspectRatioMode=1)) #Установка пиксельной карты в окно. aspectRatioMode - сохраняет пропорции
             except StopIteration:
                 self.image_label.setText("Больше изображений нет")
 
-    #Тест
+    #Тест (пока не рабочий)
     def show_prev_image(self) -> None:
         if self.iterator:
             try:
                 prev_image_path = next(self.iterator)
+                prev_image_path.prev()
                 pixmap = QPixmap(prev_image_path)
                 self.image_label.setPixmap(pixmap.scaled(self.image_labelsize(), aspectRatioMode=1))
 
             except StopIteration:
                 self.image_label.setText("Больше изображений нет")
-
 
 
 def parsing() -> argparse.Namespace:
@@ -76,10 +76,9 @@ def main():
     args = parsing()
     try:
         app = QApplication(sys.argv)
-        window = MainWindow()
-        window.show()
-        sys.exit(app.exec_())
-
+        window = MainWindow() # Создаем свой класс
+        window.show() #Вывод окна на экран
+        sys.exit(app.exec_()) #Устанавливаем закрытие окна только после события нажатия на крестик
 
     except Exception as e:
         print(f"Произошла ошибка: {e}")

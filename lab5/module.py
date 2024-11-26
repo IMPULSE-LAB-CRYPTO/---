@@ -2,7 +2,7 @@ import os
 import csv
 
 
-class ImageIterator():
+class ImageIterator:
     """
     Класс Итератора для картинок
     """
@@ -46,14 +46,3 @@ class ImageIterator():
             return image_path
         else:
             raise StopIteration
-
-
-    #Тест обратки
-    def prev(self):
-        '''
-        Метод обратный next
-        '''
-        self.index -= 1
-        if self.index < 0:
-            raise StopIteration
-        return self.images[self.index]
